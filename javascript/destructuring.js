@@ -31,3 +31,29 @@ const employee = {
 const{id:employeeId,name:employeeName,department="IT"}=employee;
 
 console.log(employeeId,employeeName,department);
+
+const car={
+    brand:"Toyota",
+    model: "Grande",
+    year:2022,
+    color: "White"
+}
+
+const {brand,...details}=car;
+
+console.log(brand);
+console.log(details);
+
+const user = {
+  name: "Hanzala",
+  address: {
+    city: "Lahore",
+    country: "Pakistan"
+  }
+};
+
+const {name:name3,address:{city:city3,country:country3}}=user;
+
+console.log(name3);
+console.log(city3);
+console.log(country3);
