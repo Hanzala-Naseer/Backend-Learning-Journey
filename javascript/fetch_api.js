@@ -146,6 +146,88 @@ async function createToDo(userId,title,completed) {
 
 createToDo(1,"Completed Fetch Api practice",false);
 
+async function updatePost(postData) {
+    const url="https://jsonplaceholder.typicode.com/posts/1";
+    try{
+        const response= await fetch(url,{
+            method:"PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(postData)
+        });
+        console.log(response.status);
 
+        console.log("Post Updated Successfully!"); 
+
+        const data= await response.json();
+        console.log(data);
+
+    
+
+
+    }catch(error){
+        console.log(error)
+    }
+    
+}
+
+updatePost({id:1,
+    title:"Mastering Fetch API",
+    body:"Learning PUT requests in javascript",
+    userId:1
+});
+
+
+async function updateUser(userData) {
+    const url="https://jsonplaceholder.typicode.com/users/1";
+    try {
+        const response= await fetch(url,{
+            method:"PATCH",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(userData)
+        })
+        if(!response.ok){
+            throw new Error("Failed to update user details");
+        }
+        console.log(response.status);
+        const data=await response.json();
+        console.log(data);
+        
+    } catch (error) {
+        console.log(error.message);
+        
+    }
+
+
+    
+}
+updateUser({email:"newEmail@yahoo.com"});
+
+
+async function deletePost(id) {
+    const url=`https://jsonplaceholder.typicode.com/todos/${id}`;
+    try {
+    const response= await fetch(url,{method:"DELETE"});
+    if(!response.ok){
+        throw new Error("Failed to Delete Post");
+    }
+    console.log(response.status);
+    console.log("Post deleted successfuly");
+
+    
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+
+
+    
+}
+
+
+deletePost(1);
 
 
