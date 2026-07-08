@@ -1,5 +1,23 @@
 const readlineSync = require("readline-sync");
-const {viewAllUsers,viewUserById,createUser}=require("./api");
+const {
+    viewAllUsers,
+    viewUserById,
+    createUser,
+    replaceUser,
+    updateUser,
+    deleteUser,
+    viewAllPosts,
+    viewPostById,
+    viewPostByUser,
+    createPost,
+    replacePost,
+    updatePost,
+    deletePost,
+    viewCommentsByPost,
+    viewAllTodos,
+    createTodo,
+    deleteTodo
+} = require("./api");
 let mainChoice;
 
 async function main() {
@@ -27,15 +45,15 @@ async function main() {
             break;
 
         case 2:
-            postsMenu();
+            await postsMenu();
             break;
 
         case 3:
-            commentsMenu();
+            await commentsMenu();
             break;
 
         case 4:
-            todosMenu();
+           await todosMenu();
             break;
 
         case 0:
@@ -72,7 +90,12 @@ async function usersMenu() {
 
         const input = readlineSync.question("Choose an option: ");
 
-choice = Number(input);
+        choice = Number(input);
+        let id=null;
+        let name=null;
+        let email=null;
+        let username=null;
+        let phone= null;
 
 
         switch (choice) {
@@ -82,31 +105,65 @@ choice = Number(input);
                 break;
 
             case 2:
-                let id=readlineSync.question("Enter User Id: ");
+                id=readlineSync.question("Enter User Id: ");
                 id=Number(id);
                 await viewUserById(id);
                 break;
 
             case 3:
-                let name=readlineSync.question("Enter Name: ");
-                let username=readlineSync.question("Enter Username: ");
-                let email=readlineSync.question("Enter email: ");
-                let phone=readlineSync.question("Enter Phone: ");
+                name=readlineSync.question("Enter Name: ");
+                username=readlineSync.question("Enter Username: ");
+                email=readlineSync.question("Enter email: ");
+                phone=readlineSync.question("Enter Phone: ");
 
                 await createUser({name,username,email,phone});
                 break;
 
             case 4:
-                console.log("Update User");
+                id=readlineSync.question("Enter User ID: ");
+                id=Number(id);
+                name=readlineSync.question("Enter Name: ");
+                username=readlineSync.question("Enter Username: ");
+                email=readlineSync.question("Enter Email: ");
+                phone=readlineSync.question("Enter Phone: ");
+
+                await replaceUser({id,name,username,email,phone});
                 break;
 
             case 5:
-                console.log("Patch User");
+                id=readlineSync.question("Enter User ID: ");
+                id=Number(id);
+                let field=readlineSync.question(`Enter Field to Update (email/phone/website/company): `);
+                if(field=="email"){
+                    email=readlineSync.question("Enter New Email: ");
+                    await updateUser({id,email});
+                    break;
+
+                }else if(field=="phone"){
+                    phone=readlineSync.question("Enter New Phone: ");
+                    await updateUser({id,phone});
+                break;
+
+                }else if(field=="website"){
+                    let website=readlineSync.question("Enter New Website: ");
+                    await updateUser({id,website});
+                    break;
+
+                }else{
+                    let company=readlineSync.question("Enter New Comapny Name: ");
+                    await updateUser({id,company});
+
+        
+                }
+
                 break;
 
             case 6:
-                console.log("Delete User");
+                id=readlineSync.question("Enter User Id: ");
+                id=Number(id);
+                await deleteUser(id);
                 break;
+                
 
             case 0:
                 return;
@@ -120,7 +177,7 @@ choice = Number(input);
 
 }
 
-function postsMenu() {
+async function postsMenu() {
 
     let choice;
 
@@ -142,36 +199,61 @@ function postsMenu() {
 `);
 
         choice = Number(readlineSync.question("Choose an option: "));
+        let id = null;
+        let title = null;
+        let body = null;
+        let userId = null;
 
         switch (choice) {
 
             case 1:
-                console.log("View All Posts");
+                await viewAllPosts();
                 break;
 
             case 2:
-                console.log("View Post By ID");
+                id=readlineSync.question("Enter Post ID: ");
+                id=Number(id);
+                await viewPostById(id);
                 break;
 
             case 3:
-                console.log("View Posts By User");
+                id=readlineSync.question("Enter User ID: ");
+                id=Number(id);
+                await viewPostByUser(id);
                 break;
 
             case 4:
-                console.log("Create Post");
+                title = readlineSync.question("Enter Title: ");
+                body = readlineSync.question("Enter Body: ");
+                userId = Number(readlineSync.question("Enter User ID: "));
+                await createPost({ title, body, userId });
                 break;
 
             case 5:
-                console.log("Replace Post");
+                id = Number(readlineSync.question("Enter Post ID: "));
+                title = readlineSync.question("Enter Title: ");
+                body = readlineSync.question("Enter Body: ");
+                userId = Number(readlineSync.question("Enter User ID: "));
+                await replacePost({ id, title, body, userId });
                 break;
 
             case 6:
-                console.log("Patch Post");
+                id = Number(readlineSync.question("Enter Post ID: "));
+                let field = readlineSync.question("Enter Field to Update (title/body): ");
+                if (field == "title") {
+                    title = readlineSync.question("Enter New Title: ");
+                 await updatePost({ id, title });
+                } else {
+                    body = readlineSync.question("Enter New Body: ");
+                    await updatePost({ id, body });
+                }
                 break;
 
             case 7:
-                console.log("Delete Post");
+                id = Number(readlineSync.question("Enter Post ID: "));
+                await deletePost(id);
                 break;
+
 
             case 0:
                 return;
@@ -183,9 +265,10 @@ function postsMenu() {
         readlineSync.question("\nPress Enter to continue...");
     }
 
+    
 }
 
-function commentsMenu() {
+async function commentsMenu() {
 
     let choice;
 
@@ -202,10 +285,13 @@ function commentsMenu() {
 
         choice = Number(readlineSync.question("Choose an option: "));
 
+        let id = null;
+
         switch (choice) {
 
             case 1:
-                console.log("View Comments of a Post");
+                id = Number(readlineSync.question("Enter Post ID: "));
+                await viewCommentsByPost(id);
                 break;
 
             case 0:
@@ -219,8 +305,7 @@ function commentsMenu() {
     }
 
 }
-
-function todosMenu() {
+async function todosMenu() {
 
     let choice;
 
@@ -238,19 +323,27 @@ function todosMenu() {
 `);
 
         choice = Number(readlineSync.question("Choose an option: "));
+        let id = null;
+        let title = null;
+        let userId = null;
+        let completed = null;
 
         switch (choice) {
 
             case 1:
-                console.log("View All Todos");
+                await viewAllTodos();
                 break;
 
             case 2:
-                console.log("Create Todo");
+                userId = Number(readlineSync.question("Enter User ID: "));
+                title = readlineSync.question("Enter Todo Title: ");
+                completed = readlineSync.question("Completed (true/false): ") === "true";
+                await createTodo({ userId, title, completed });
                 break;
 
             case 3:
-                console.log("Delete Todo");
+                id = Number(readlineSync.question("Enter Todo ID: "));
+                await deleteTodo(id);
                 break;
 
             case 0:
@@ -264,5 +357,7 @@ function todosMenu() {
     }
 
 }
+
+
 
 main();
