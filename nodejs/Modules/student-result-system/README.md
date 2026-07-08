@@ -48,7 +48,7 @@ student-result-system/
 Clone the repository
 
 ```bash
-git clone <your-github-repo-link>
+gh repo clone Hanzala-Naseer/Backend-Learning-Journey
 ```
 
 Go to the project directory
