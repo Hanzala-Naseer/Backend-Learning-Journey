@@ -83,31 +83,31 @@ node app.js
 
 ## View Student by ID
 
-![Student Details](screenshots/student-details.png)
+![Student Details](screenshots/student-details.PNG)
 
 ---
 
 ## Passed Students
 
-![Passed Students](screenshots/passed-students.png)
+![Passed Students](screenshots/passed-students.PNG)
 
 ---
 
 ## Failed Students
 
-![Failed Students](screenshots/failed-students.png)
+![Failed Students](screenshots/failed-students.PNG)
 
 ---
 
 ## Toppers
 
-![Toppers](screenshots/toppers.png)
+![Toppers](screenshots/toppers.PNG)
 
 ---
 
 ## Class Statistics
 
-![Statistics](screenshots/statistics.png)
+![Statistics](screenshots/statistics.PNG)
 
 ---
 
