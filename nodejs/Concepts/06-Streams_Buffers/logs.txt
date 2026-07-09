@@ -1,0 +1,4 @@
+Server Started
+Database Connected
+User logged in
+Server Stopped
