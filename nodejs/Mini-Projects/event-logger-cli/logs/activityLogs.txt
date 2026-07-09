@@ -1,0 +1,7 @@
+[7/9/2026, 5:07:03 PM] User hanzala logged in.
+[7/9/2026, 5:09:01 PM] User hashas logged in.
+[7/9/2026, 5:14:31 PM] User hanzala logged out.
+[7/9/2026, 5:24:05 PM] User ahmed registered with email ahmed@gmail.com.
+[7/9/2026, 5:34:03 PM] Hanzala purchased Laptop for Rs. 58000.
+[7/9/2026, 5:42:18 PM] File downloaded: resume.pdf.
+[7/9/2026, 5:42:37 PM] File downloaded: song.mp3.
