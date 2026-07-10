@@ -174,6 +174,102 @@ const server= http.createServer((req,res)=>{
     });
 
     }
+
+    else if (req.method === "PUT" && req.url.startsWith("/api/students/")) {
+
+    const id = Number(req.url.split("/")[3]);
+
+    const index = students.findIndex(student => student.id === id);
+
+    res.setHeader("Content-Type", "application/json");
+
+    if (index === -1) {
+        res.statusCode = 404;
+        return res.end(JSON.stringify({
+            message: "Student not found"
+        }));
+    }
+
+    let chunks = [];
+
+    req.on("data", chunk => {
+        chunks.push(chunk);
+    });
+
+    req.on("end", () => {
+
+        if (chunks.length === 0) {
+            res.statusCode = 400;
+            return res.end(JSON.stringify({
+                message: "Body required"
+            }));
+        }
+
+        try {
+
+            const body = Buffer.concat(chunks).toString().trim();
+
+            const updatedStudent = JSON.parse(body);
+
+            const validation = validateStudent(updatedStudent);
+
+            if (!validation.valid) {
+                res.statusCode = 400;
+                return res.end(JSON.stringify({
+                    message: validation.message
+                }));
+            }
+
+            updatedStudent.id = id;
+
+            students[index] = updatedStudent;
+
+            res.statusCode = 200;
+
+            res.end(JSON.stringify({
+                message: "Student updated successfully",
+                data: updatedStudent
+            }));
+
+        } catch {
+
+            res.statusCode = 400;
+
+            res.end(JSON.stringify({
+                message: "Invalid JSON format sent"
+            }));
+
+        }
+
+    });
+
+}
+else if (req.method === "DELETE" && req.url.startsWith("/api/students/")) {
+
+    const id = Number(req.url.split("/")[3]);
+
+    const index = students.findIndex(student => student.id === id);
+
+    res.setHeader("Content-Type", "application/json");
+
+    if (index === -1) {
+        res.statusCode = 404;
+        return res.end(JSON.stringify({
+            message: "Student not found"
+        }));
+    }
+
+    const deletedStudent = students.splice(index, 1)[0];
+
+    res.statusCode = 200;
+
+    res.end(JSON.stringify({
+        message: "Student deleted successfully",
+        data: deletedStudent
+    }));
+
+}
+
 else{
         res.statusCode=404;
         res.end("Oops ! It looks You lost your Way 404")
