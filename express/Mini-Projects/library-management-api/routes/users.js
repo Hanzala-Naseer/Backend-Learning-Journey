@@ -4,15 +4,12 @@ const logger=require("../middleware/logger.js");
 
 const isUserLoggedIn=require("../middleware/auth.js");
 
+
+const { users,getAllUsers,addUser,deleteUser}=require("../controllers/userController.js");
 const router= express.Router();
 
 
 
-const users=[];
-
-function getAllUsers(req,res){
-    res.status(200).json(users);
-}
 
 
 function checkDuplicateUser(req, res, next) {
@@ -36,13 +33,6 @@ function validateUser(req,res,next){
     next();
 }
 
-function addUser(req,res){
-  const {id,name}=req.body;
-    users.push({id,name});
-
-    res.status(201).json({message:"User added successfully.",user:req.body});
-
-}
 
 
 function isUserExist(req,res,next){
@@ -53,12 +43,6 @@ function isUserExist(req,res,next){
     }
     req.userIndex = index;
     next();
-
-}
-
-function deleteUser(req,res){
-    users.splice(req.userIndex, 1);
-    res.status(200).json({ message: "User deleted successfully" });
 
 }
 

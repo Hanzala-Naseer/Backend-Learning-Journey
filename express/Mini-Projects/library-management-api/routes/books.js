@@ -4,6 +4,8 @@ const logger=require("../middleware/logger.js");
 
 const isUserLoggedIn= require("../middleware/auth.js");
 
+const {books,getBooks,createBook,deleteBook}=require("../controllers/bookController.js");
+
 const router=express.Router();
 
 
@@ -36,13 +38,6 @@ function checkDuplicateBook(req, res, next) {
     next();
 }
 
-function createBook(req,res){
-    const {id,title,author}=req.body;
-    books.push({id,title,author});
-
-    res.status(201).json({message:"Book added successfully.",book:req.body});
-
-}
 
 
 function findExistingBook(req,res,next){
@@ -56,14 +51,8 @@ function findExistingBook(req,res,next){
 
 }
 
-function deleteBook(req,res){
-    books.splice(req.bookIndex, 1);
-    res.status(200).json({ message: "Book deleted successfully" });
-
-}
 
 
-const books=[];
 
 
 router.get("/",(req,res)=>{
