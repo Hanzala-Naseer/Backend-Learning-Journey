@@ -1,5 +1,7 @@
 const express= require("express");
 
+const path =require("path");
+
 const app= express();
 
 
@@ -69,6 +71,23 @@ app.get("/not-found",(req,res)=>{
 app.get("/server-error",(req,res)=>{
     res.status(500).send("500 Internal Serve Error");
 })
+
+
+// res.sendFile()
+
+app.get("/home",(req,res)=>{
+    res.sendFile(path.join(__dirname, "static", "home.html"));
+})
+
+
+app.get("/about",(req,res)=>{
+    res.sendFile(path.join(__dirname, "static", "about.html"));
+})
+
+app.get("/contact",(req,res)=>{
+    res.sendFile(path.join(__dirname, "static", "contact.html"));
+})
+
 
 
 app.listen(3000,(req,res)=>{
