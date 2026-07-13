@@ -74,5 +74,11 @@ router.delete(
     isUserLoggedIn,
     findExistingBook,
     deleteBook);
+router.get("/error", (req, res, next) => {
 
+    const error = new Error("Something failed!");
+
+    next(error);
+
+});
     module.exports=router;
