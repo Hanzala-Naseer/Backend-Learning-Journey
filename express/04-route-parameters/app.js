@@ -39,7 +39,6 @@ app.get("/education/:year",(req,res)=>{
 
     res.send(`Graduation year: ${year}`);
 
-res.send(education);
 })
 
 app.get("/skills",(req,res)=>{
@@ -59,7 +58,7 @@ res.send(skills);
 })
 
 
-app.get("/skills:skill",(req,res)=>{
+app.get("/skills/:skill",(req,res)=>{
 
 const skill=req.params.skill;
 
