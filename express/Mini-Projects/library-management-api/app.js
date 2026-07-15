@@ -3,6 +3,7 @@ require("dotenv").config();
 const port=process.env.PORT;
 const bookRoutes=require("./routes/books.js")
 const userRoutes=require("./routes/users.js");
+const connectDB=require("./config/db.js");
 const app= express();
 
 
@@ -23,7 +24,24 @@ app.use((err, req, res, next) => {
     });
 
 });
-app.listen(port,()=>{
-    console.log(`Server running on ${port}`);
-})
+async function startServer() {
+    try {
 
+        await connectDB();
+        app.listen(port,()=>{
+        console.log(`Server running on ${port}`);
+        })
+
+        
+    } catch (error) {
+
+        console.log(error.message);
+        
+    }
+
+
+    
+
+}
+
+startServer();
