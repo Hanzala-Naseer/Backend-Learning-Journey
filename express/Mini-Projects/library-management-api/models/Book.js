@@ -40,7 +40,18 @@ category: {
 },
         
         
-    tags:[String],
+    tags:{
+        type:[String],
+        validate:{
+            validator:function(value){
+                if(this.category!=="Programming"){
+                    return true
+                };
+                return value.length>0;
+            },
+            message:"Programming books must have atleast 1 tag !"
+        }
+    },
     publisher:{
         name:{
             type:String,

@@ -33,7 +33,8 @@ async function saveBook(){
         title:"Clean Code",
         author:"    hahahahahha    ",
         price:1280,
-        category:"       Novel               ",
+        category:"Programming",
+        tags:["IEEE"],
         reviews:[{user:"Hanzala",rating:5}],
         publisher:{name:"Karvaan",email:"HANZALA@gMaIL.com        ",countryCode:"               pk"}
         
