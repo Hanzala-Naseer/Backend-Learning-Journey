@@ -93,7 +93,8 @@ category: {
 bookSchema.pre("save", function (next) {
 
     console.log("Before saving book...");
-    console.log(this.title="Advanced Advanced JSSSSS");
+    this.title="Advanced Advanced JSSSSS";
+    console.log(this.title);
 
 
 });
@@ -113,5 +114,33 @@ bookSchema.pre("save", function (next) {
 
 });
 
+bookSchema.post("save", function (doc) {
+    console.log("Book saved successfully");
+});
+
+bookSchema.post("save", function (doc) {
+    console.log("Doc:",doc);
+});
+
+bookSchema.post("save", function (doc) {
+    console.log("Updated Title:", doc.title);
+});
+
+
+bookSchema.post("save", function (doc) {
+  console.log("[ Created at:", new Date().toLocaleString(), "]");
+
+});
+
+
+bookSchema.post("save",function(doc){
+    console.log(`Notification: ${doc.title} is now available.`)
+})
+
 const Book=mongoose.model("Book",bookSchema);
+
+
+
+
+
 module.exports=Book;
