@@ -608,158 +608,318 @@ async function testStaticMethods(){
 
 
 
-async function borrowBook(userId, bookId) {
+// async function borrowBook(userId, bookId) {
 
+//     const session = await mongoose.startSession();
+
+//     try {
+
+//         session.startTransaction();
+
+//         console.log(`\nTransaction Started for User: ${userId}`);
+
+//         const user = await User.findById(userId).session(session);
+
+//         if (!user) {
+//             throw new Error("User not found");
+//         }
+
+//         const book = await Book.findById(bookId).session(session);
+
+//         if (!book) {
+//             throw new Error("Book not found");
+//         }
+
+//         console.log(`📖 ${user.name} is checking availability...`);
+
+//         if (!book.available) {
+//             throw new Error("Book already borrowed");
+//         }
+
+//         await new Promise(resolve => setTimeout(resolve, 3000));
+
+//         book.available = false;
+
+//         await book.save({ session });
+
+//      const dueDate = new Date();
+//     dueDate.setDate(dueDate.getDate() + 14);
+
+//     await BorrowRecord.create(
+//             [{
+//                 user: user._id,
+//                 book: book._id,
+//                 dueDate
+//             }],
+//             { session }
+//         );
+
+//         user.borrowedBooks += 1;
+
+//         await user.save({ session });
+
+//         console.log(`${user.name} is committing...`);
+
+//         await session.commitTransaction();
+
+//         console.log(`Transaction Committed for ${user.name}`);
+
+//     }
+//     catch (error) {
+
+//         await session.abortTransaction();
+
+//         console.log(`Transaction Failed for User ${userId}`);
+
+//         console.log(error.message);
+
+//     }
+//     finally {
+
+//         session.endSession();
+
+//     }
+
+// }
+
+
+// async function testRaceCondition() {
+
+//     try {
+
+//         await connectDB();
+
+//         console.log("\n===============================");
+//         console.log(" RACE CONDITION TEST STARTED ");
+//         console.log("===============================\n");
+
+//         //-------------------------------------------------
+//         // Create User 1
+//         //-------------------------------------------------
+
+//         const user1 = await User.create({
+
+//             name: `User_A_${Date.now()}`,
+
+//             email: `userA${Date.now()}@gmail.com`
+
+//         });
+
+//         //-------------------------------------------------
+//         // Create User 2
+//         //-------------------------------------------------
+
+//         const user2 = await User.create({
+
+//             name: `User_B_${Date.now()}`,
+
+//             email: `userB${Date.now()}@gmail.com`
+
+//         });
+
+//         console.log("👤 User 1:", user1.name);
+
+//         console.log("👤 User 2:", user2.name);
+
+//         //-------------------------------------------------
+//         // One Available Book
+//         //-------------------------------------------------
+
+//         const BOOK_ID = "PUT_YOUR_BOOK_ID_HERE";
+
+//         console.log("\nBoth users will try to borrow the SAME book.\n");
+
+//         //-------------------------------------------------
+//         // Fire both requests simultaneously
+//         //-------------------------------------------------
+
+//         await Promise.all([
+
+//             borrowBook(user1._id,"6a5dd4459559a28fd3d89f21"),
+
+//             borrowBook(user2._id, "6a5dd4459559a28fd3d89f21")
+
+//         ]);
+
+//         console.log("\n===============================");
+//         console.log(" TEST FINISHED ");
+//         console.log("===============================\n");
+
+//     }
+//     catch (error) {
+
+//         console.log(error.message);
+
+//     }
+//     finally {
+
+//         await mongoose.disconnect();
+
+//     }
+
+// }
+
+
+async function returnBook(borrowRecordId) {
+    await connectDB();
     const session = await mongoose.startSession();
 
     try {
 
-        session.startTransaction();
+        await session.withTransaction(async () => {
 
-        console.log(`\nTransaction Started for User: ${userId}`);
+            const borrowRecord = await BorrowRecord.findById(borrowRecordId)
+                .session(session);
 
-        const user = await User.findById(userId).session(session);
+            if (!borrowRecord) {
+                throw new Error("Borrow record not found.");
+            }
 
-        if (!user) {
-            throw new Error("User not found");
-        }
+            if (borrowRecord.status === "RETURNED") {
+                throw new Error("Book has already been returned.");
+            }
 
-        const book = await Book.findById(bookId).session(session);
+            const book = await Book.findById(borrowRecord.book)
+                .session(session);
 
-        if (!book) {
-            throw new Error("Book not found");
-        }
+            if (!book) {
+                throw new Error("Book not found.");
+            }
 
-        console.log(`📖 ${user.name} is checking availability...`);
+            const user = await User.findById(borrowRecord.user)
+                .session(session);
 
-        if (!book.available) {
-            throw new Error("Book already borrowed");
-        }
+            if (!user) {
+                throw new Error("User not found.");
+            }
 
-        await new Promise(resolve => setTimeout(resolve, 3000));
+            borrowRecord.status = "RETURNED";
+            borrowRecord.returnDate = new Date();
+            await borrowRecord.save({ session });
 
-        book.available = false;
+            book.available = true;
+            await book.save({ session });
 
-        await book.save({ session });
+            user.borrowedBooks--;
+            await user.save({ session });
 
-     const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14);
+        });
 
-    await BorrowRecord.create(
-            [{
-                user: user._id,
-                book: book._id,
-                dueDate
-            }],
-            { session }
-        );
+        console.log("Book returned successfully.");
 
-        user.borrowedBooks += 1;
+    } catch (error) {
 
-        await user.save({ session });
+        console.error(error.message);
 
-        console.log(`${user.name} is committing...`);
+    } finally {
 
-        await session.commitTransaction();
-
-        console.log(`Transaction Committed for ${user.name}`);
-
-    }
-    catch (error) {
-
-        await session.abortTransaction();
-
-        console.log(`Transaction Failed for User ${userId}`);
-
-        console.log(error.message);
+        await session.endSession();
 
     }
-    finally {
-
-        session.endSession();
-
-    }
-
 }
 
 
-async function testRaceCondition() {
+
+async function borrowBook(userId, bookId) {
+
+    const session = await mongoose.startSession();
+
+    let attempt = 0;
 
     try {
 
-        await connectDB();
+        await session.withTransaction(async () => {
 
-        console.log("\n===============================");
-        console.log(" RACE CONDITION TEST STARTED ");
-        console.log("===============================\n");
+            attempt++;
 
-        //-------------------------------------------------
-        // Create User 1
-        //-------------------------------------------------
+            console.log("\n================================");
+            console.log(`Transaction Attempt: ${attempt}`);
+            console.log("================================");
 
-        const user1 = await User.create({
+            // Find User
+            const user = await User.findById(userId).session(session);
 
-            name: `User_A_${Date.now()}`,
+            // Find Book
+            const book = await Book.findById(bookId).session(session);
 
-            email: `userA${Date.now()}@gmail.com`
+            console.log("Book Available:", book.available);
+
+            if (!book.available) {
+                throw new Error("Book is already borrowed.");
+            }
+
+            console.log("Waiting 5 seconds...");
+            await new Promise(resolve => setTimeout(resolve, 5000));
+
+            console.log("Creating Borrow Record...");
+
+            await BorrowRecord.create(
+                [{
+                    user: userId,
+                    book: bookId,
+                    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                }],
+                { session }
+            );
+
+            console.log("Updating Book...");
+
+            book.available = false;
+            await book.save({ session });
+
+            console.log("Updating User...");
+
+            user.borrowedBooks++;
+            await user.save({ session });
+
+            console.log("Callback Finished");
 
         });
 
-        //-------------------------------------------------
-        // Create User 2
-        //-------------------------------------------------
-
-        const user2 = await User.create({
-
-            name: `User_B_${Date.now()}`,
-
-            email: `userB${Date.now()}@gmail.com`
-
-        });
-
-        console.log("👤 User 1:", user1.name);
-
-        console.log("👤 User 2:", user2.name);
-
-        //-------------------------------------------------
-        // One Available Book
-        //-------------------------------------------------
-
-        const BOOK_ID = "PUT_YOUR_BOOK_ID_HERE";
-
-        console.log("\nBoth users will try to borrow the SAME book.\n");
-
-        //-------------------------------------------------
-        // Fire both requests simultaneously
-        //-------------------------------------------------
-
-        await Promise.all([
-
-            borrowBook(user1._id,"6a5dd4459559a28fd3d89f21"),
-
-            borrowBook(user2._id, "6a5dd4459559a28fd3d89f21")
-
-        ]);
-
-        console.log("\n===============================");
-        console.log(" TEST FINISHED ");
-        console.log("===============================\n");
+        console.log("Transaction Committed");
 
     }
-    catch (error) {
+    catch (err) {
 
-        console.log(error.message);
+        console.log("Transaction Failed");
+        console.log(err.message);
 
     }
     finally {
 
-        await mongoose.disconnect();
+        await session.endSession();
 
     }
 
 }
 
-testRaceCondition();
+
+async function testRetry() {
+    await connectDB();
+
+    const bookId = "6a5dd4313aafe93ec640bb0f";
+
+    const user1 = "6a5de15ddda88dadc0b552b3";
+
+    const user2 = "6a5e055002737dbf553d7cee";
+
+    await Promise.all([
+
+        borrowBook(user1, bookId),
+
+        borrowBook(user2, bookId)
+
+    ]);
+
+}
+
+
+
+testRetry();
+
+// returnBook("6a5e01985c94cc44e4303800");
+
+// testRaceCondition();
 
 // testStaticMethods();
 
