@@ -61,7 +61,8 @@ category: {
             type:String,
             trim:true,
             required:[true,"Email required !"],
-            lowercase:true
+            lowercase:true,
+            unique:true
 
 
         },
