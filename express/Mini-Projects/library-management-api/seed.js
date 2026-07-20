@@ -19,8 +19,9 @@ console.log("MONGO_URI:", process.env.MONGO_URI);
 const Book=require("./models/Book.js");
 const Author=require("./models/Author.js");
 const Publisher=require("./models/Publisher.js");
-const User = require("./models/User");
 
+const User = require("./models/User");
+const BorrowRecord = require("./models/BorrowRecord");
 
 const connectDB=require("./config/db.js");
 
@@ -605,7 +606,80 @@ async function testStaticMethods(){
 }
 
 
-testStaticMethods();
+
+
+async function borrowBook(userId, bookId) {
+
+    await connectDB();
+
+    const session = await mongoose.startSession();
+
+    try {
+
+        session.startTransaction();
+
+        const user = await User.findById(userId).session(session);
+
+        if (!user) {
+            throw new Error("User not found.");
+        }
+
+        const book = await Book.findById(bookId).session(session);
+
+        if (!book) {
+            throw new Error("Book not found.");
+        }
+
+        if (!book.available) {
+            throw new Error("Book is already borrowed.");
+        }
+
+        await BorrowRecord.create(
+            [{
+                user: user._id,
+                book: book._id,
+
+                // Borrow for 14 days
+                dueDate: new Date(
+                    Date.now() + 14 * 24 * 60 * 60 * 1000
+                )
+            }],
+            { session }
+        );
+
+        book.available = false;
+
+        await book.save({ session });
+
+        user.borrowedBooks += 1;
+
+        await user.save({ session });
+
+        await session.commitTransaction();
+
+        console.log("Book borrowed successfully.");
+
+    }
+    catch (error) {
+
+        await session.abortTransaction();
+
+        console.log("Transaction Failed");
+        console.log(error.message);
+
+    }
+    finally {
+
+        await session.endSession();
+
+        await mongoose.disconnect();
+
+    }
+
+}
+
+borrowBook("6a5de15ddda88dadc0b552b3","6a5dd4313aafe93ec640bb0f");
+// testStaticMethods();
 
 
 // getOneBookPopulate("Clean Code");

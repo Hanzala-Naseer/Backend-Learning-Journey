@@ -68,22 +68,21 @@ category: {
             }
         }
     ],
-    isbn:{
-        type:String,
-        validate:{
-            validator:async function(value){
-                const existingBook=await Book.findOne({
-                    isbn:value
-                });
+    isbn: {
+    type: String,
+    validate: {
+        validator: async function (value) {
 
+            const existingBook = await Book.findOne({
+                isbn: value,
+                _id: { $ne: this._id }
+            });
 
-                return !existingBook;
-
-            },
-            message:"Book with same isbn already exists !"
-        }
-
+            return !existingBook;
+        },
+        message: "Book with same isbn already exists!"
     }
+}
 },
 {
     timestamps:true
