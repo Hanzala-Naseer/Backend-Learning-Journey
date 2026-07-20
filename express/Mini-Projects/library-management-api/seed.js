@@ -822,6 +822,8 @@ async function returnBook(borrowRecordId) {
 
 async function borrowBook(userId, bookId) {
 
+    await connectDB();
+
     const session = await mongoose.startSession();
 
     let attempt = 0;
@@ -914,8 +916,248 @@ async function testRetry() {
 }
 
 
+const createUser = async () => {
 
-testRetry();
+  try {
+    await connectDB();
+    const user = await User.create({
+      firstName: "Hanzala",
+      lastName: "Naseer",
+      email: "hanzala@example.com",
+      role: "user"
+    });
+
+    console.log("User Created:");
+    console.log(user);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+
+
+
+async function testVirtualGetter() {
+
+    try {
+        await connectDB();
+
+        const user = await User.findOne();
+
+        if (!user) {
+            console.log("No user found.");
+            return;
+        }
+
+        console.log(user.toObject());
+
+        console.log(user.toJSON());
+
+        console.log("First Name :", user.firstName);
+        console.log("Last Name  :", user.lastName);
+
+        console.log("Full Name  :", user.fullName);
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+
+async function testVirtualSetter() {
+
+    try {
+        await connectDB();
+
+        const user = await User.findOne({
+            email: "hanzala@example.com"
+        });
+
+
+        if (!user) {
+            console.log("User not found");
+            return;
+        }
+
+
+        console.log("\n========== BEFORE ==========");
+
+        console.log("First Name :", user.firstName);
+        console.log("Last Name  :", user.lastName);
+        console.log("Full Name  :", user.fullName);
+
+
+
+        user.fullName = "Ahmed Ali";
+
+
+        console.log("\n========== AFTER SETTER ==========");
+
+        console.log("First Name :", user.firstName);
+        console.log("Last Name  :", user.lastName);
+        console.log("Full Name  :", user.fullName);
+
+
+
+        await user.save();
+
+
+        console.log("\nUser Updated Successfully");
+
+
+        const updatedUser = await User.findOne({
+            email: "hanzala@example.com"
+        });
+
+
+        console.log("\n========== FROM DATABASE ==========");
+
+        console.log("First Name :", updatedUser.firstName);
+        console.log("Last Name  :", updatedUser.lastName);
+        console.log("Full Name  :", updatedUser.fullName);
+
+
+    } catch(error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+// borrowBook("6a5e179b804909d2bb840070","6a5dd6f9e0e68244d8bd423c");
+
+async function testVirtualPopulate(){
+
+    try {
+
+        await connectDB();
+
+        const user = await User
+            .findOne({
+                email:"hanzala@example.com"
+            })
+            .populate("borrowRecords");
+
+
+        if(!user){
+
+            console.log("User not found");
+            return;
+
+        }
+
+
+        console.log("\n========== USER ==========");
+
+        console.log("Name:", user.fullName);
+
+        console.log("Email:", user.email);
+
+
+        console.log("\n========== BORROW RECORDS ==========");
+
+
+        console.log(user.borrowRecords);
+
+
+    } catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+
+
+
+async function testNestedPopulate() {
+
+    try {
+        await connectDB();
+        const user = await User
+            .findOne({
+                email: "hanzala@example.com"
+            })
+            .populate({
+                path: "borrowRecords",
+                populate: {
+                    path: "book"
+                }
+            });
+
+
+        if (!user) {
+            console.log("User not found");
+            return;
+        }
+
+
+        console.log("\n========== USER ==========");
+
+        console.log("Name:", user.fullName);
+        console.log("Email:", user.email);
+
+
+
+        console.log("\n========== BORROW RECORDS ==========");
+
+
+        user.borrowRecords.forEach((record, index) => {
+
+            console.log(`\n--- Borrow Record ${index + 1} ---`);
+
+            console.log("Record ID:", record._id);
+
+            console.log("Status:", record.status);
+
+            console.log("Borrow Date:", record.borrowDate);
+
+            console.log("Due Date:", record.dueDate);
+
+
+            console.log("\nBook Details:");
+
+            console.log("Book ID:", record.book._id);
+
+            console.log("Title:", record.book.title);
+
+            console.log("Category:", record.book.category);
+
+        });
+
+
+    } catch(error) {
+
+        console.error(error);
+
+    }
+
+
+}
+
+
+testNestedPopulate();
+// testVirtualPopulate();
+
+// testVirtualSetter();
+
+// createUser();
+
+// testVirtualGetter();
+
+
+
+
+
+// testRetry();
 
 // returnBook("6a5e01985c94cc44e4303800");
 

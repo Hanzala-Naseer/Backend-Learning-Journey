@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
 
-    name:{
+    firstName:{
+        type:String,
+        required:true,
+        trim:true
+    },
+
+    lastName:{
         type:String,
         required:true,
         trim:true
@@ -31,8 +37,12 @@ const userSchema = new mongoose.Schema({
 
 },
 {
-    timestamps:true
-});
+    timestamps:true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+}
+
+);
 
 
 
@@ -42,7 +52,30 @@ userSchema.methods.isAdmin = function(){
 
 };
 
+userSchema.virtual("fullName").get(function(){
+    return this.firstName +" "+ this.lastName;
+});
 
+
+userSchema.virtual("fullName").set(function (value) {
+
+    const parts = value.split(" ");
+
+    this.firstName = parts[0];
+    this.lastName = parts[1];
+
+});
+
+
+userSchema.virtual("borrowRecords", {
+
+    ref: "BorrowRecord",
+
+    localField: "_id",
+
+    foreignField: "user"
+
+});
 
 const User = mongoose.model("User", userSchema);
 
