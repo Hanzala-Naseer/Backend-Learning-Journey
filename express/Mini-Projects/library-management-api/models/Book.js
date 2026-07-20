@@ -90,6 +90,16 @@ category: {
 }
 );
 
+
+bookSchema.pre("save", function () {
+
+    if (this.price > 5000) {
+        throw new Error("Book price exceeds allowed limit.");
+    }
+
+});
+
+
 bookSchema.pre("save", function (next) {
 
     console.log("Before saving book...");
@@ -137,6 +147,75 @@ bookSchema.post("save",function(doc){
     console.log(`Notification: ${doc.title} is now available.`)
 })
 
+
+
+
+bookSchema.pre("find", function(){
+
+    console.log("Before finding books");
+
+});
+
+bookSchema.pre("find", function(){
+
+    console.log(this);
+
+});
+
+
+bookSchema.pre("find", function(){
+
+    this.where({
+        available:true
+    });
+
+});
+
+bookSchema.methods.getSummary=function(){
+
+    return `${this.title} costs ${this.price}`;
+
+    
+}
+
+
+bookSchema.methods.getTitle = function () {
+
+    return this.title;
+
+};
+
+
+bookSchema.methods.isExpensive = function () {
+
+    return this.price > 1000;
+
+};
+
+
+bookSchema.methods.applyDiscount = function (percent) {
+
+    const discountAmount = (this.price * percent) / 100;
+
+    this.price = this.price - discountAmount;
+
+    return this.price;
+
+};
+
+
+bookSchema.methods.getBookInfo = function () {
+
+    return `${this.title} - Category: ${this.category}`;
+
+};
+
+
+bookSchema.methods.isProgrammingBook = function () {
+
+    return this.category === "Programming";
+
+};
 const Book=mongoose.model("Book",bookSchema);
 
 

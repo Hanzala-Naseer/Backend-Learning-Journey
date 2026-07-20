@@ -19,6 +19,9 @@ console.log("MONGO_URI:", process.env.MONGO_URI);
 const Book=require("./models/Book.js");
 const Author=require("./models/Author.js");
 const Publisher=require("./models/Publisher.js");
+const User = require("./models/User");
+
+
 const connectDB=require("./config/db.js");
 
 async function saveBook() {
@@ -48,7 +51,7 @@ async function saveBook() {
             title: "Advanced JS",
             author: "6a5dcf1ec23a82296019e6df",
             publisher: "6a5dcf1ec23a82296019e6de",
-            price: 1280,
+            price: 5001,
             category: "Programming",
             tags: ["IEEE"],
             reviews: [
@@ -102,7 +105,7 @@ async function getBooksFilter() {
         console.log("DB connected...\n");
 
         // const books=await Book.find({price:{$lt:500}});
-        const books=await Book.find({price:{$gt:500}});
+        const books=await Book.find({category:"Programming"});
 
 
         console.log(books);
@@ -417,7 +420,117 @@ async function getNestedPopulate() {
 // getBooksPopulateAuthorName();
 // getAllBookPopulate();
 // deleteMany("Atomic Habits");
-saveBook();
+
+
+async function instanceMethod() {
+
+    try {
+
+        await connectDB();
+
+
+   const book= await Book.findOne({_id:"6a5dd4459559a28fd3d89f21"});
+   console.log(book.getSummary());
+
+     
+
+}
+catch (error) {
+
+    console.log(error.message);
+
+}
+    
+}
+
+
+async function testBookMethods(){
+
+    try {
+
+        await connectDB();
+
+        const book = await Book.findById(
+            "6a5dd4459559a28fd3d89f21"
+        );
+
+
+        if(!book){
+            console.log("Book not found");
+            return;
+        }
+
+
+        console.log("Title:", book.getTitle());
+
+        console.log(
+            "Expensive:",
+            book.isExpensive()
+        );
+
+
+        console.log(
+            "Before Discount:",
+            book.price
+        );
+
+
+        book.applyDiscount(20);
+
+        console.log(
+            "After Discount:",
+            book.price
+        );
+
+
+        console.log(
+            "Info:",
+            book.getBookInfo()
+        );
+
+
+        console.log(
+            "Programming Book:",
+            book.isProgrammingBook()
+        );
+
+
+    } catch(error){
+
+        console.log(error.message);
+
+    }
+
+}
+
+
+
+
+async function testUserMethod(){
+
+    await connectDB();
+
+
+    const user = await User.create({
+
+        name:"Hanzala",
+        email:"hanzala@gmail.com",
+        role:"admin"
+
+    });
+
+
+    console.log(
+        user.isAdmin()
+    );
+
+
+}
+
+
+testUserMethod();
+
+
 
 
 // getOneBookPopulate("Clean Code");
