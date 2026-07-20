@@ -86,7 +86,23 @@ category: {
                 max:[5,"Maximum rating will be 5 !"]
             }
         }
-    ]
+    ],
+    isbn:{
+        type:String,
+        validate:{
+            validator:async function(value){
+                const existingBook=await Book.findOne({
+                    isbn:value
+                });
+
+
+                return !existingBook;
+
+            },
+            message:"Book with same isbn already exists !"
+        }
+
+    }
 },
 {
     timestamps:true
