@@ -90,185 +90,187 @@ category: {
 );
 
 
-bookSchema.pre("save", function () {
+// bookSchema.pre("save", function () {
 
-    if (this.price > 5000) {
-        throw new Error("Book price exceeds allowed limit.");
-    }
+//     if (this.price > 5000) {
+//         throw new Error("Book price exceeds allowed limit.");
+//     }
 
-});
-
-
-bookSchema.pre("save", function (next) {
-
-    console.log("Before saving book...");
-    this.title="Advanced Advanced JSSSSS";
-    console.log(this.title);
+// });
 
 
-});
+// bookSchema.pre("save", function (next) {
 
-bookSchema.pre("save", function (next) {
-
-    console.log(this.author);
-
-
-});
+//     console.log("Before saving book...");
+//     this.title="Advanced Advanced JSSSSS";
+//     console.log(this.title);
 
 
-bookSchema.pre("save", function (next) {
+// });
 
-    console.log(this.price);
+// bookSchema.pre("save", function (next) {
 
-
-});
-
-bookSchema.post("save", function (doc) {
-    console.log("Book saved successfully");
-});
-
-bookSchema.post("save", function (doc) {
-    console.log("Doc:",doc);
-});
-
-bookSchema.post("save", function (doc) {
-    console.log("Updated Title:", doc.title);
-});
+//     console.log(this.author);
 
 
-bookSchema.post("save", function (doc) {
-  console.log("[ Created at:", new Date().toLocaleString(), "]");
-
-});
+// });
 
 
-bookSchema.post("save",function(doc){
-    console.log(`Notification: ${doc.title} is now available.`)
-})
+// bookSchema.pre("save", function (next) {
+
+//     console.log(this.price);
+
+
+// });
+
+// bookSchema.post("save", function (doc) {
+//     console.log("Book saved successfully");
+// });
+
+// bookSchema.post("save", function (doc) {
+//     console.log("Doc:",doc);
+// });
+
+// bookSchema.post("save", function (doc) {
+//     console.log("Updated Title:", doc.title);
+// });
+
+
+// bookSchema.post("save", function (doc) {
+//   console.log("[ Created at:", new Date().toLocaleString(), "]");
+
+// });
+
+
+// bookSchema.post("save",function(doc){
+//     console.log(`Notification: ${doc.title} is now available.`)
+// })
 
 
 
 
-bookSchema.pre("find", function(){
+// bookSchema.pre("find", function(){
 
-    console.log("Before finding books");
+//     console.log("Before finding books");
 
-});
+// });
 
-bookSchema.pre("find", function(){
+// bookSchema.pre("find", function(){
 
-    console.log(this);
+//     console.log(this);
 
-});
+// });
 
 
-bookSchema.pre("find", function(){
+// bookSchema.pre("find", function(){
 
-    this.where({
-        available:true
-    });
+//     this.where({
+//         available:true
+//     });
 
-});
+// });
 
-bookSchema.methods.getSummary=function(){
+// bookSchema.methods.getSummary=function(){
 
-    return `${this.title} costs ${this.price}`;
+//     return `${this.title} costs ${this.price}`;
 
     
-}
+// }
 
 
-bookSchema.methods.getTitle = function () {
+// bookSchema.methods.getTitle = function () {
 
-    return this.title;
+//     return this.title;
 
-};
-
-
-bookSchema.methods.isExpensive = function () {
-
-    return this.price > 1000;
-
-};
-
-bookSchema.statics.findByCategory = function(category){
-
-    return this.find({
-        category: category
-    });
-
-};
+// };
 
 
+// bookSchema.methods.isExpensive = function () {
 
-bookSchema.statics.findAvailableBooks = function(){
+//     return this.price > 1000;
 
-    return this.find({
-        available:true
-    });
+// };
 
-};
+// bookSchema.statics.findByCategory = function(category){
+
+//     return this.find({
+//         category: category
+//     });
+
+// };
 
 
 
-bookSchema.statics.findBooksByPriceRange = function(min,max){
+// bookSchema.statics.findAvailableBooks = function(){
 
-    return this.find({
-        price:{
-            $gte:min,
-            $lte:max
-        }
-    });
+//     return this.find({
+//         available:true
+//     });
 
-};
+// };
 
 
 
-bookSchema.statics.countBooksByCategory = function(category){
+// bookSchema.statics.findBooksByPriceRange = function(min,max){
 
-    return this.countDocuments({
-        category:category
-    });
+//     return this.find({
+//         price:{
+//             $gte:min,
+//             $lte:max
+//         }
+//     });
 
-};
-
-
-
-bookSchema.statics.searchBooks = function(keyword){
-
-    return this.find({
-        title:{
-            $regex:keyword,
-            $options:"i"
-        }
-    });
-
-};
+// };
 
 
-bookSchema.methods.applyDiscount = function (percent) {
 
-    const discountAmount = (this.price * percent) / 100;
+// bookSchema.statics.countBooksByCategory = function(category){
 
-    this.price = this.price - discountAmount;
+//     return this.countDocuments({
+//         category:category
+//     });
 
-    return this.price;
-
-};
-
-
-bookSchema.methods.getBookInfo = function () {
-
-    return `${this.title} - Category: ${this.category}`;
-
-};
+// };
 
 
-bookSchema.methods.isProgrammingBook = function () {
 
-    return this.category === "Programming";
+// bookSchema.statics.searchBooks = function(keyword){
 
-};
+//     return this.find({
+//         title:{
+//             $regex:keyword,
+//             $options:"i"
+//         }
+//     });
+
+// };
+
+
+// bookSchema.methods.applyDiscount = function (percent) {
+
+//     const discountAmount = (this.price * percent) / 100;
+
+//     this.price = this.price - discountAmount;
+
+//     return this.price;
+
+// };
+
+
+// bookSchema.methods.getBookInfo = function () {
+
+//     return `${this.title} - Category: ${this.category}`;
+
+// };
+
+
+// bookSchema.methods.isProgrammingBook = function () {
+
+//     return this.category === "Programming";
+
+// };
+
+
 const Book=mongoose.model("Book",bookSchema);
 
 
