@@ -17,50 +17,57 @@ const mongoose=require("mongoose");
 console.log("MONGO_URI:", process.env.MONGO_URI);
 
 const Book=require("./models/Book.js");
-
+const Author=require("./models/Author.js");
+const Publisher=require("./models/Publisher.js");
 const connectDB=require("./config/db.js");
 
-async function saveBook(){
-
+async function saveBook() {
     try {
+        await connectDB();
 
-        
-    await connectDB();
+ 
 
-
-   const savedBook= await Book.create({
-
-        title:"Clean Code",
-        author:"    hahahahahha    ",
-        price:1280,
-        category:"Programming",
-        tags:["IEEE"],
-        reviews:[{user:"Hanzala",rating:5}],
-        publisher:{name:"Karvaan",email:"HANZALA@gMaIL.com        ",countryCode:"               pk"},
-        
-        
-
-    });
+        // Step 2: Create Publisher
+        // const publisher = await Publisher.create({
+        //     name: "Karvaan",
+        //     email: "c@gmail.com",
+        //     countryCode: "pk",
+        // });
 
 
-    console.log("Book Saved:",savedBook);
-        
+               // Step 1: Create Author
+        // const author = await Author.create({
+        //     name: "Robert C. Martin",
+        //     email: "unclebob@example.com",
+        //     country: "USA",
+        //     publisher:publisher._id
+        // });
+
+        // Step 3: Create Book
+        const savedBook = await Book.create({
+            title: "Advanced JS",
+            author: "6a5dcf1ec23a82296019e6df",
+            publisher: "6a5dcf1ec23a82296019e6de",
+            price: 1280,
+            category: "Programming",
+            tags: ["IEEE"],
+            reviews: [
+                {
+                    user: "Hanzala",
+                    rating: 5,
+                },
+            ],
+            isbn:Math.random()
+        });
+
+        // console.log("Author:", author);
+        // console.log("Publisher:", publisher);
+        console.log("Book:", savedBook);
+
     } catch (error) {
-
-        console.log(error.message);
-
-        // console.log(error.errors);
-
-        // console.log(error.errors.title);
-
-        // console.log(error.errors.title.message);
-
-
-        
+        console.log(error);
     }
-
-};
-
+}
 
 
 async function getAllbooks() {
@@ -82,6 +89,9 @@ async function getAllbooks() {
     }
     
 }
+
+
+
 
 
 async function getBooksFilter() {
@@ -343,9 +353,74 @@ async function deleteMany(value){
 
 
 
+async function getOneBookPopulate(title){
+
+    await connectDB("DB connected");
+
+    const book= await Book.findOne({title:title}).populate("author");
+    if(!book){
+        console.log("Book not found !");
+        return;
+    }
+
+    console.log(book);
+
+}
+
+
+
+async function getAllBookPopulate(){
+
+    await connectDB("DB connected");
+
+    const books= await Book.find({}).populate("author");
+    if(!books){
+        console.log("There are no books!");
+        return;
+    }
+
+    console.log(books);
+
+}
+
+
+async function getBooksPopulateAuthorName(){
+
+    await connectDB("DB connected");
+
+    const book= await Book.find().populate("author","name email -_id");
+    if(!book){
+        console.log("Book not found !");
+        return;
+    }
+
+    console.log(book);
+
+}
+
+async function getNestedPopulate() {
+    await connectDB();
+
+    const books = await Book.find().populate({
+        path: "author",
+        populate: {
+            path: "publisher"
+        }
+    });
+
+    console.log(JSON.stringify(books, null, 2));
+}
+
+
+
+// getNestedPopulate();
+// getBooksPopulateAuthorName();
+// getAllBookPopulate();
 // deleteMany("Atomic Habits");
 saveBook();
 
+
+// getOneBookPopulate("Clean Code");
 // deleteOne("Atomic Habits");
 
 

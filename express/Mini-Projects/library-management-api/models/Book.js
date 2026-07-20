@@ -16,8 +16,8 @@ const bookSchema=new mongoose.Schema(
         }
     },
     author:{
-        type:String,
-        trim:true,
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Author",
         required:[true,"Author is required"]
     },
     price:{
@@ -53,29 +53,9 @@ category: {
         }
     },
     publisher:{
-        name:{
-            type:String,
-            trim:true,
-        },
-        email:{
-            type:String,
-            trim:true,
-            required:[true,"Email required !"],
-            lowercase:true,
-            unique:true
-
-
-        },
-        city:{
-            type:String,
-            trim:true,
-
-        },
-        countryCode:{
-            type:String,
-            uppercase:true,
-            trim:true
-        }
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Publisher",
+      required:[true,"Publisher is required! "]
         
     },
     reviews:[
@@ -109,6 +89,29 @@ category: {
     timestamps:true
 }
 );
+
+bookSchema.pre("save", function (next) {
+
+    console.log("Before saving book...");
+    console.log(this.title="Advanced Advanced JSSSSS");
+
+
+});
+
+bookSchema.pre("save", function (next) {
+
+    console.log(this.author);
+
+
+});
+
+
+bookSchema.pre("save", function (next) {
+
+    console.log(this.price);
+
+
+});
 
 const Book=mongoose.model("Book",bookSchema);
 module.exports=Book;
