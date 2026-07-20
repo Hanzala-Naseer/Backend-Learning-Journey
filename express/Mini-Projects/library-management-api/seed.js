@@ -528,9 +528,84 @@ async function testUserMethod(){
 }
 
 
-testUserMethod();
+// testUserMethod();
+
+async function testStaticMethods(){
+
+    try{
+
+        await connectDB();
 
 
+        const programmingBooks =
+            await Book.findByCategory(
+                "Programming"
+            );
+
+        console.log(
+            "Programming Books:",
+            programmingBooks
+        );
+
+
+
+        const availableBooks =
+            await Book.findAvailableBooks();
+
+        console.log(
+            "Available:",
+            availableBooks
+        );
+
+
+
+        const cheapBooks =
+            await Book.findBooksByPriceRange(
+                500,
+                2000
+            );
+
+        console.log(
+            "Price Range:",
+            cheapBooks
+        );
+
+
+
+        const count =
+            await Book.countBooksByCategory(
+                "Programming"
+            );
+
+        console.log(
+            "Total Programming Books:",
+            count
+        );
+
+
+
+        const search =
+            await Book.searchBooks(
+                "JS"
+            );
+
+        console.log(
+            "Search Result:",
+            search
+        );
+
+
+    }
+    catch(error){
+
+        console.log(error.message);
+
+    }
+
+}
+
+
+testStaticMethods();
 
 
 // getOneBookPopulate("Clean Code");

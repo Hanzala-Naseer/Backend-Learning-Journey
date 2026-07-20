@@ -192,6 +192,60 @@ bookSchema.methods.isExpensive = function () {
 
 };
 
+bookSchema.statics.findByCategory = function(category){
+
+    return this.find({
+        category: category
+    });
+
+};
+
+
+
+bookSchema.statics.findAvailableBooks = function(){
+
+    return this.find({
+        available:true
+    });
+
+};
+
+
+
+bookSchema.statics.findBooksByPriceRange = function(min,max){
+
+    return this.find({
+        price:{
+            $gte:min,
+            $lte:max
+        }
+    });
+
+};
+
+
+
+bookSchema.statics.countBooksByCategory = function(category){
+
+    return this.countDocuments({
+        category:category
+    });
+
+};
+
+
+
+bookSchema.statics.searchBooks = function(keyword){
+
+    return this.find({
+        title:{
+            $regex:keyword,
+            $options:"i"
+        }
+    });
+
+};
+
 
 bookSchema.methods.applyDiscount = function (percent) {
 
