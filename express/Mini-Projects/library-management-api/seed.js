@@ -30,9 +30,13 @@ async function saveBook(){
 
    const savedBook= await Book.create({
 
-        title:"Atomic Habits",
-        author:"hahahahahha",
-        price:232323
+        title:"Clean Code",
+        author:"    hahahahahha    ",
+        price:1280,
+        category:"       Novel               ",
+        reviews:[{user:"Hanzala",rating:5}],
+        publisher:{name:"Karvaan",email:"HANZALA@gMaIL.com        ",countryCode:"               pk"}
+        
 
     });
 
@@ -42,6 +46,14 @@ async function saveBook(){
     } catch (error) {
 
         console.log(error.message);
+
+        // console.log(error.errors);
+
+        // console.log(error.errors.title);
+
+        // console.log(error.errors.title.message);
+
+
         
     }
 
@@ -329,8 +341,8 @@ async function deleteMany(value){
 
 
 
-deleteMany("Atomic Habits");
-
+// deleteMany("Atomic Habits");
+saveBook();
 
 // deleteOne("Atomic Habits");
 
